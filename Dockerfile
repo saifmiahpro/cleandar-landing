@@ -2,6 +2,9 @@ FROM node:20-alpine
 
 WORKDIR /app
 
+# Install curl for healthcheck
+RUN apk add --no-cache curl
+
 # Install dependencies
 COPY package*.json ./
 RUN npm ci --legacy-peer-deps
@@ -9,8 +12,9 @@ RUN npm ci --legacy-peer-deps
 # Copy all files
 COPY . .
 
-# Build the app
+# Build the app with increased memory
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV NODE_OPTIONS="--max-old-space-size=4096"
 RUN npm run build
 
 # Expose port
