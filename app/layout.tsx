@@ -23,7 +23,7 @@ export default function RootLayout({
     return (
         <html lang="fr" className="scroll-smooth bg-[#050507]" suppressHydrationWarning>
             <body
-                className="font-body bg-[#050507] text-slate-200 antialiased selection:bg-violet-600 selection:text-white m-0 p-0 overflow-x-hidden"
+                className="font-body bg-[#050507] text-slate-200 antialiased selection:bg-violet-600 selection:text-white m-0 p-0"
                 style={{
                     WebkitTapHighlightColor: 'transparent',
                 }}

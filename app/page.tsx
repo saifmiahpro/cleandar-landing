@@ -749,33 +749,36 @@ export default function Home() {
         };
     }, [mounted]);
 
-    const scrollProgress = useMotionValue(0);
-    const smoothScroll = useSpring(scrollProgress, { stiffness: 40, damping: 30, restDelta: 0.001 });
-    const progressHeight = useTransform(smoothScroll, [0, 1], ["0%", "100%"]);
+    const { scrollY } = useScroll();
+    const [elementStats, setElementStats] = useState({ top: 0, height: 0 });
 
     useEffect(() => {
         if (!mounted || !containerRef.current) return;
 
-        const updateScroll = () => {
-            if (!containerRef.current) return;
-            const rect = containerRef.current.getBoundingClientRect();
-            const height = containerRef.current.offsetHeight;
-            const windowHeight = window.innerHeight;
-
-            const scrolled = -rect.top;
-            const total = height - windowHeight;
-            const progress = Math.max(0, Math.min(1, scrolled / total));
-
-            scrollProgress.set(progress);
+        const updateStats = () => {
+            if (containerRef.current) {
+                const rect = containerRef.current.getBoundingClientRect();
+                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                setElementStats({
+                    top: rect.top + scrollTop,
+                    height: containerRef.current.offsetHeight
+                });
+            }
         };
 
-        window.addEventListener("scroll", updateScroll, { passive: true });
-        updateScroll();
+        updateStats();
+        window.addEventListener("resize", updateStats);
+        return () => window.removeEventListener("resize", updateStats);
+    }, [mounted]);
 
-        return () => {
-            window.removeEventListener("scroll", updateScroll);
-        };
-    }, [mounted, scrollProgress]);
+    const scrollYProgress = useTransform(
+        scrollY,
+        [elementStats.top, elementStats.top + elementStats.height - (typeof window !== 'undefined' ? window.innerHeight : 0)],
+        [0, 1]
+    );
+
+    const smoothScroll = useSpring(scrollYProgress, { stiffness: 40, damping: 30, restDelta: 0.001 });
+    const progressHeight = useTransform(smoothScroll, [0, 1], ["0%", "100%"]);
 
     useMotionValueEvent(smoothScroll, "change", (v) => {
         if (!mounted) return;
@@ -798,7 +801,7 @@ export default function Home() {
     }
 
     return (
-        <div className="bg-[#050507] text-slate-100 font-sans selection:bg-violet-600 selection:text-white no-scrollbar overflow-x-clip">
+        <div className="bg-[#050507] text-slate-100 font-sans selection:bg-violet-600 selection:text-white no-scrollbar">
 
             {/* NOISE & GRADIENTS FIXES */}
             <div className="fixed inset-0 bg-mesh-violet opacity-30 pointer-events-none z-0" />
@@ -970,7 +973,7 @@ export default function Home() {
 
             {/* SECTION 2: SCROLLYTELLING (VISION) - DIRECT ENTRY */}
             <section id="vision" className="relative h-[1200vh]" ref={containerRef}>
-                <div className="sticky top-0 h-[100dvh] w-full bg-[#020617] overflow-hidden">
+                <div className="sticky top-0 h-[100dvh] w-full bg-[#020617]">
                     <div className="h-full max-w-7xl mx-auto px-6 md:px-16 flex flex-col md:grid md:grid-cols-2 items-center md:justify-center pt-24 md:pt-0 gap-4 md:gap-24 relative">
 
                         {/* DEVICE COLUMN - SECOND on mobile (text first) */}
