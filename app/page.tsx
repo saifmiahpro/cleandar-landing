@@ -5,7 +5,8 @@ import {
     AnimatePresence,
     useMotionValue,
     useTransform,
-    useSpring
+    useSpring,
+    useScroll
 } from "framer-motion";
 import {
     ArrowRight, Check, Clock, Smartphone,
@@ -747,30 +748,18 @@ export default function Home() {
         };
     }, [mounted]);
 
-    const scrollProgress = useMotionValue(0);
-    const smoothScroll = useSpring(scrollProgress, { stiffness: 40, damping: 30, restDelta: 0.001 });
+    const { scrollYProgress } = useScroll({
+        target: containerRef,
+        offset: ["start start", "end end"]
+    });
+
+    const smoothScroll = useSpring(scrollYProgress, { stiffness: 40, damping: 30, restDelta: 0.001 });
     const progressHeight = useTransform(smoothScroll, [0, 1], ["0%", "100%"]);
 
     useEffect(() => {
-        if (!mounted || !containerRef.current) return;
+        if (!mounted) return;
 
-        const updateScroll = () => {
-            if (!containerRef.current) return;
-            const rect = containerRef.current.getBoundingClientRect();
-            const height = containerRef.current.offsetHeight;
-            const windowHeight = window.innerHeight;
-
-            // Calcul du progrès similaire à "start start" "end end"
-            const scrolled = -rect.top;
-            const total = height - windowHeight;
-            const progress = Math.max(0, Math.min(1, scrolled / total));
-
-            scrollProgress.set(progress);
-        };
-
-        window.addEventListener("scroll", updateScroll, { passive: true });
-        const unsubscribe = smoothScroll.onChange(v => {
-            // Updated thresholds for Elite feel & timing
+        const unsubscribe = smoothScroll.on("change", v => {
             if (v < 0.08) setActiveScene("chaos");
             else if (v < 0.18) setActiveScene("creation");
             else if (v < 0.28) setActiveScene("booking");
@@ -785,10 +774,9 @@ export default function Home() {
         });
 
         return () => {
-            window.removeEventListener("scroll", updateScroll);
             unsubscribe();
         };
-    }, [mounted, scrollProgress, smoothScroll]);
+    }, [mounted, smoothScroll]);
 
     if (!mounted) {
         return <div className="bg-[#050507] min-h-screen" />;
