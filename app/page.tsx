@@ -749,13 +749,33 @@ export default function Home() {
         };
     }, [mounted]);
 
-    const { scrollYProgress } = useScroll({
-        target: containerRef,
-        offset: ["start start", "end end"]
-    });
-
-    const smoothScroll = useSpring(scrollYProgress, { stiffness: 40, damping: 30, restDelta: 0.001 });
+    const scrollProgress = useMotionValue(0);
+    const smoothScroll = useSpring(scrollProgress, { stiffness: 40, damping: 30, restDelta: 0.001 });
     const progressHeight = useTransform(smoothScroll, [0, 1], ["0%", "100%"]);
+
+    useEffect(() => {
+        if (!mounted || !containerRef.current) return;
+
+        const updateScroll = () => {
+            if (!containerRef.current) return;
+            const rect = containerRef.current.getBoundingClientRect();
+            const height = containerRef.current.offsetHeight;
+            const windowHeight = window.innerHeight;
+
+            const scrolled = -rect.top;
+            const total = height - windowHeight;
+            const progress = Math.max(0, Math.min(1, scrolled / total));
+
+            scrollProgress.set(progress);
+        };
+
+        window.addEventListener("scroll", updateScroll, { passive: true });
+        updateScroll();
+
+        return () => {
+            window.removeEventListener("scroll", updateScroll);
+        };
+    }, [mounted, scrollProgress]);
 
     useMotionValueEvent(smoothScroll, "change", (v) => {
         if (!mounted) return;
