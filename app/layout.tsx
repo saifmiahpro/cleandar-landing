@@ -36,13 +36,4 @@ export default function RootLayout({
     return (
         <html lang="fr" className="scroll-smooth h-full" suppressHydrationWarning>
             <body
-                className="font-body bg-white text-slate-900 antialiased selection:bg-violet-100 selection:text-violet-900 h-full m-0 p-0 overflow-x-hidden"
-                style={{
-                    WebkitTapHighlightColor: 'transparent',
-                }}
-            >
-                {children}
-            </body>
-        </html>
-    );
-}
+               
