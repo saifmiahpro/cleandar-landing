@@ -1,19 +1,5 @@
 import type { Metadata } from "next";
 import "./globals.css";
-// Google Fonts removed temporarily to fix build timeout
-// import { Outfit, Plus_Jakarta_Sans } from "next/font/google";
-
-// const outfit = Outfit({
-//     variable: "--font-heading",
-//     subsets: ["latin"],
-//     display: "swap",
-// });
-
-// const plusJakarta = Plus_Jakarta_Sans({
-//     variable: "--font-body",
-//     subsets: ["latin"],
-//     display: "swap",
-// });
 
 export const metadata: Metadata = {
     title: "CleanDar - L'OS des Indépendants",
@@ -36,4 +22,13 @@ export default function RootLayout({
     return (
         <html lang="fr" className="scroll-smooth h-full" suppressHydrationWarning>
             <body
-               
+                className="font-body bg-white text-slate-900 antialiased selection:bg-violet-100 selection:text-violet-900 h-full m-0 p-0 overflow-x-hidden"
+                style={{
+                    WebkitTapHighlightColor: 'transparent',
+                }}
+            >
+                {children}
+            </body>
+        </html>
+    );
+}
