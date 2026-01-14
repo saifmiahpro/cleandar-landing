@@ -6,7 +6,8 @@ import {
     useMotionValue,
     useTransform,
     useSpring,
-    useScroll
+    useScroll,
+    useMotionValueEvent
 } from "framer-motion";
 import {
     ArrowRight, Check, Clock, Smartphone,
@@ -756,27 +757,21 @@ export default function Home() {
     const smoothScroll = useSpring(scrollYProgress, { stiffness: 40, damping: 30, restDelta: 0.001 });
     const progressHeight = useTransform(smoothScroll, [0, 1], ["0%", "100%"]);
 
-    useEffect(() => {
+    useMotionValueEvent(smoothScroll, "change", (v) => {
         if (!mounted) return;
-
-        const unsubscribe = smoothScroll.on("change", v => {
-            if (v < 0.08) setActiveScene("chaos");
-            else if (v < 0.18) setActiveScene("creation");
-            else if (v < 0.28) setActiveScene("booking");
-            else if (v < 0.38) setActiveScene("notif");
-            else if (v < 0.50) setActiveScene("map");
-            else if (v < 0.60) setActiveScene("reminder");
-            else if (v < 0.70) setActiveScene("dashboard");
-            else if (v < 0.80) setActiveScene("crm");
-            else if (v < 0.88) setActiveScene("invoice");
-            else if (v < 0.94) setActiveScene("peace");
-            else setActiveScene("comparison");
-        });
-
-        return () => {
-            unsubscribe();
-        };
-    }, [mounted, smoothScroll]);
+        // Spaced out thresholds for better mobile pacing
+        if (v < 0.10) setActiveScene("chaos");
+        else if (v < 0.20) setActiveScene("creation");
+        else if (v < 0.30) setActiveScene("booking");
+        else if (v < 0.40) setActiveScene("notif");
+        else if (v < 0.52) setActiveScene("map");
+        else if (v < 0.62) setActiveScene("reminder");
+        else if (v < 0.72) setActiveScene("dashboard");
+        else if (v < 0.82) setActiveScene("crm");
+        else if (v < 0.90) setActiveScene("invoice");
+        else if (v < 0.95) setActiveScene("peace");
+        else setActiveScene("comparison");
+    });
 
     if (!mounted) {
         return <div className="bg-[#050507] min-h-screen" />;
@@ -955,7 +950,7 @@ export default function Home() {
 
             {/* SECTION 2: SCROLLYTELLING (VISION) - DIRECT ENTRY */}
             <section id="vision" className="relative h-[1200vh]" ref={containerRef}>
-                <div className="sticky top-0 h-screen w-full bg-[#020617] overflow-hidden">
+                <div className="sticky top-0 h-[100dvh] w-full bg-[#020617] overflow-hidden">
                     <div className="h-full max-w-7xl mx-auto px-6 md:px-16 flex flex-col md:grid md:grid-cols-2 items-center md:justify-center pt-24 md:pt-0 gap-4 md:gap-24 relative">
 
                         {/* DEVICE COLUMN - SECOND on mobile (text first) */}
