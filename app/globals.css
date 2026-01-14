@@ -122,4 +122,29 @@ body {
 }
 
 .no-scrollbar {
-  -ms-overflow-style: none
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Phone Mockup Specifics */
+.phone-screen-mask {
+  mask-image: linear-gradient(to bottom, black 90%, transparent 100%);
+}
+
+.vertical-text {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+}
+
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.text-gradient-purple {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-violet-600 via-fuchsia-400 to-indigo-600;
+  background-size: 200% auto;
+}
+
+.animate-gradient-slow {
+  animation: gradient 8s ease infinite;
+}
